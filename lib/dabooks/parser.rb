@@ -99,7 +99,11 @@ module Dabooks
         error 'Invalid amount', amount unless number.count('.') <= 1
         number << '.00' if number.count('.') == 0
         dollars, _, cents = number.partition('.')
-        sign = Integer(dollars) >= 0 ? 1 : -1
+        sign = dollars.start_with?('-') ? -1 : 1
+
+        fail if cents.size != 2
+        cents = cents.gsub(/^0+/, '')
+        cents = '0' if cents == ''
 
         Amount.new(Integer(dollars)*100 + sign*Integer(cents))
       end

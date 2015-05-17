@@ -9,7 +9,7 @@ module Dabooks
 
     def write_to(io)
       @transaction_set.transactions.each do |trans|
-        write_transaction(trans)
+        write_transaction(trans, io)
         io.write("\n")
       end
     end
@@ -41,8 +41,8 @@ module Dabooks
 
     def format_entry(entry)
       account = format_account(entry.account).ljust(max_account_width, ' ')
-      amount = format_amount(entry.amount).rjust(max_amount_width, ' ')
-      "  #{account}  $#{amount}"
+      amount = ('$' + format_amount(entry.amount)).rjust(max_amount_width, ' ')
+      "  #{account}  #{amount}"
     end
 
     def format_account(*args)
@@ -59,7 +59,7 @@ module Dabooks
 
     def self.format_amount(amount)
       if amount.is_a? PlaceholderAmount
-        "__.__"
+        '____'
       else
         sign = amount.cents >= 0 ? '' : '-'
         dollars = (amount.cents.abs / 100).floor.to_s

@@ -137,12 +137,10 @@ module Dabooks
     memoize :fixed_balance
 
     def normalized_entries
+      return entries if fixed?
+
       entries.map do |e|
-        if e.amount.fixed?
-          e
-        else
-          Entry.new(e.account, Amount.new(-fixed_balance.cents))
-        end
+        e.amount.fixed? ? e : Entry.new(e.account, -fixed_balance)
       end
     end
     memoize :normalized_entries

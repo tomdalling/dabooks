@@ -14,6 +14,7 @@ EOS
 
   def run
     problem_count = @argv.map{ |file| check(file) }.reduce(:+)
+    puts "Found #{problem_count} problems"
     exit problem_count > 0 ? 1 : 0
   end
 
