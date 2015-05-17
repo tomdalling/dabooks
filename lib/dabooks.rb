@@ -14,13 +14,40 @@ module Dabooks
       @cents = Integer(cents)
     end
 
-    def fixed?; true; end
+    def +(other)
+      transform{ @cents += other.cents }
+    end
+
+    def -(other)
+      transform{ @cents -= other.cents }
+    end
+
+    def hash
+      cents.hash
+    end
+
+    def eql?(other)
+      other.is_a?(self.class) && cents == other.cents
+    end
+
+    def <=>(other)
+      cents <=> other.cents
+    end
+
+    def fixed?
+      true
+    end
   end
 
-  class PlaceholderAmount
+  class PlaceholderAmount < Amount
     include Adamantium
-    def cents; 0; end
-    def fixed?; false; end
+    def initialize
+      super(0)
+    end
+
+    def fixed?
+      false
+    end
   end
 
   class Account
@@ -29,6 +56,31 @@ module Dabooks
 
     def initialize(name)
       @name = name
+    end
+
+    def hash
+      name.hash
+    end
+
+    def depth
+      name.count(':')
+    end
+
+    def parent
+      if name.include?(':')
+        parent_name, _, _ = name.rpartition(':')
+        Account.new(parent_name)
+      else
+        nil
+      end
+    end
+
+    def eql?(other)
+      other.is_a?(self.class) && other.name == name
+    end
+
+    def <=>(other)
+      name <=> other.name
     end
   end
 
@@ -71,6 +123,29 @@ module Dabooks
     def fixed?
       entries.map(&:amount).all?(&:fixed?)
     end
+    memoize :fixed?
+
+    def fixed_balance
+      Amount.new(
+        entries
+          .map(&:amount)
+          .select(&:fixed?)
+          .map(&:cents)
+          .reduce(0, :+)
+      )
+    end
+    memoize :fixed_balance
+
+    def normalized_entries
+      entries.map do |e|
+        if e.amount.fixed?
+          e
+        else
+          Entry.new(e.account, Amount.new(-fixed_balance.cents))
+        end
+      end
+    end
+    memoize :normalized_entries
   end
 
   class TransactionSet

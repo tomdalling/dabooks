@@ -15,7 +15,7 @@ module Dabooks::CLI
     opts = Trollop.with_standard_exception_handling(subcommand::OPTIONS) do
       subcommand::OPTIONS.parse(argv)
     end
-    subcommand.run(opts, argv)
+    subcommand.new(opts, argv).run
   end
 end
 

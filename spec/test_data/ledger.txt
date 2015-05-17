@@ -26,3 +26,8 @@
   expenses:food 100
   assets:cash 50
   assets:bank _
+
+# Out of order (dated before previous)
+2015-05-28 Cash withdrawl
+  assets:bank -80
+  assets:cash _

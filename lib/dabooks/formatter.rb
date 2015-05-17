@@ -42,14 +42,22 @@ module Dabooks
     def format_entry(entry)
       account = format_account(entry.account).ljust(max_account_width, ' ')
       amount = format_amount(entry.amount).rjust(max_amount_width, ' ')
-      "#{account}  $#{amount}"
+      "  #{account}  $#{amount}"
     end
 
-    def format_account(account)
+    def format_account(*args)
+      self.class.format_account(*args)
+    end
+
+    def format_amount(*args)
+      self.class.format_amount(*args)
+    end
+
+    def self.format_account(account)
       account.name
     end
 
-    def format_amount(amount)
+    def self.format_amount(amount)
       if amount.is_a? PlaceholderAmount
         "__.__"
       else
