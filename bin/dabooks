@@ -1,0 +1,7 @@
+#!/bin/bash
+bundle exec ruby \
+    -I lib \
+    -r dabooks \
+    -r dabooks/cli \
+    -e "Dabooks::CLI.run" \
+    "$@"
