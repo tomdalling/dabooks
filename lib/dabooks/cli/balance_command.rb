@@ -35,6 +35,7 @@ EOS
 
     lines = all_balances
       .to_a
+      .reject{ |(_, bal)| bal.zero? }
       .sort_by(&:first)
       .map do |(acc, bal)|
         [
@@ -44,7 +45,10 @@ EOS
       end
 
     puts file
-    TableFormatter.print_rows(lines, $stdout, [{ align: :left }, { align: :right }])
+    TableFormatter.print_rows(lines, $stdout, [
+      { align: :left, padding: '.' },
+      { align: :right },
+    ])
     print "\n"
   end
 

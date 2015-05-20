@@ -116,10 +116,6 @@ EOS
   def print_ts(transaction_set)
     f = Formatter.new(transaction_set)
     f.write_to($stdout)
-    return
-    transaction_set.transactions
-      .select{ |t| t.entries.any?{ |e| e.account.name == 'income:interest' } }
-      .each{ |t| f.write_transaction(t, $stdout) }
   end
 
 end

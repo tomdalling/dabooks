@@ -16,11 +16,15 @@ module Dabooks
     end
 
     def +(other)
-      transform{ @cents += other.cents }
+      transform { @cents += other.cents }
     end
 
     def -(other)
-      transform{ @cents -= other.cents }
+      transform { @cents -= other.cents }
+    end
+
+    def -@
+      transform { @cents = -@cents }
     end
 
     def hash
@@ -39,8 +43,20 @@ module Dabooks
       not @cents.nil?
     end
 
+    def zero?
+      @cents == 0
+    end
+
     def inspect
       "<Amount #{@cents.inspect}>"
+    end
+
+    def self.[](*args)
+      new(*args)
+    end
+
+    def self.unfixed
+      new
     end
   end
 
@@ -50,6 +66,10 @@ module Dabooks
 
     def initialize(name)
       @name = name
+    end
+
+    def self.[](*args)
+      new(*args)
     end
 
     def hash

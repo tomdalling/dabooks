@@ -89,7 +89,8 @@ module Dabooks
       end
 
       def parse_amount(amount)
-        return Amount.new if amount.strip =~ /^_+$/
+        # $____ or ____
+        return Amount.new if amount.strip =~ /^\$?_+$/
 
         split_idx = amount.index(/[0-9\-.]/)
         error 'Invalid amount', amount unless split_idx
