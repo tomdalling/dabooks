@@ -97,6 +97,10 @@ module Dabooks
       other.is_a?(self.class) && other.name == name
     end
 
+    def ==(other)
+      eql?(other)
+    end
+
     def <=>(other)
       name <=> other.name
     end
