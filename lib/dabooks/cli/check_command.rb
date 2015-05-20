@@ -12,10 +12,19 @@ EOS
     @argv = argv
   end
 
+  ResultSummary = Struct.new(:problems, :total) do
+    def +(other)
+      ResultSummary[problems + other.problems, total + other.total]
+    end
+  end
+
   def run
-    problem_count = @argv.map{ |file| check(file) }.reduce(:+)
-    puts "Found #{problem_count} problems"
-    exit problem_count > 0 ? 1 : 0
+    summary = @argv
+      .map{ |file| check(file) }
+      .reduce(&:+)
+
+    puts "Found #{summary.problems} problems in #{summary.total} transactions"
+    exit summary.problems > 0 ? 1 : 0
   end
 
   def check(file)
@@ -36,7 +45,7 @@ EOS
       problem_count += problems.size
     end
 
-    problem_count
+    ResultSummary[problem_count, transaction_set.transactions.size]
   end
 
   def problems_for(transaction)
@@ -49,11 +58,9 @@ EOS
 
   def print_problems(formatter, trans, problems)
     print "\n"
-    puts '='*80
     formatter.write_transaction(trans, $stdout)
-    print "\n"
     problems.each do |p|
-      puts " - #{p}"
+      puts "  !!! #{p}"
     end
     print "\n"
   end
