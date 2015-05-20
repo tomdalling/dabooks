@@ -3,6 +3,7 @@ require 'date'
 require 'adamantium'
 
 require 'dabooks/formatter'
+require 'dabooks/table_formatter'
 require 'dabooks/parser'
 
 module Dabooks
@@ -10,8 +11,8 @@ module Dabooks
     include Adamantium
     attr_reader :cents
 
-    def initialize(cents)
-      @cents = Integer(cents)
+    def initialize(cents=nil)
+      @cents = cents ? Integer(cents) : nil
     end
 
     def +(other)
@@ -35,18 +36,11 @@ module Dabooks
     end
 
     def fixed?
-      true
-    end
-  end
-
-  class PlaceholderAmount < Amount
-    include Adamantium
-    def initialize
-      super(0)
+      not @cents.nil?
     end
 
-    def fixed?
-      false
+    def inspect
+      "<Amount #{@cents.inspect}>"
     end
   end
 
@@ -82,6 +76,10 @@ module Dabooks
     def <=>(other)
       name <=> other.name
     end
+
+    def inspect
+      "<Account #{@name.inspect}>"
+    end
   end
 
   class Entry
@@ -91,6 +89,10 @@ module Dabooks
     def initialize(account, amount)
       @account = account
       @amount = amount
+    end
+
+    def inspect
+      "<Entry #{@account.inspect} #{@amount.inspect}>"
     end
   end
 
@@ -148,10 +150,15 @@ module Dabooks
 
   class TransactionSet
     include Adamantium
+    include Enumerable
     attr_reader :transactions
 
     def initialize(transactions)
       @transactions = transactions
+    end
+
+    def each
+      @transactions.each{ |t| yield t }
     end
   end
 

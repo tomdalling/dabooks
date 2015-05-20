@@ -89,7 +89,7 @@ module Dabooks
       end
 
       def parse_amount(amount)
-        return PlaceholderAmount.new if amount.strip =~ /^_+$/
+        return Amount.new if amount.strip =~ /^_+$/
 
         split_idx = amount.index(/[0-9\-.]/)
         error 'Invalid amount', amount unless split_idx
@@ -98,6 +98,7 @@ module Dabooks
 
         error 'Invalid amount', amount unless number.count('.') <= 1
         number << '.00' if number.count('.') == 0
+        number.gsub!(/,/, '') #ignore commas
         dollars, _, cents = number.partition('.')
         sign = dollars.start_with?('-') ? -1 : 1
 

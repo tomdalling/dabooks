@@ -24,7 +24,7 @@ EOS
     last_date = nil
     problem_count = 0
 
-    transaction_set.transactions.each do |trans|
+    transaction_set.each do |trans|
       problems = problems_for(trans)
       if last_date && trans.date < last_date
         problems << 'is dated before the previous transaction'
@@ -59,7 +59,7 @@ EOS
   end
 
   def has_multiple_placeholders(transaction)
-    transaction.entries.select{ |e| e.amount.is_a?(PlaceholderAmount) }.size > 1
+    transaction.entries.reject{ |e| e.amount.fixed? }.size > 1
   end
 
 end

@@ -58,14 +58,20 @@ module Dabooks
     end
 
     def self.format_amount(amount)
-      if amount.is_a? PlaceholderAmount
-        '____'
-      else
-        sign = amount.cents >= 0 ? '' : '-'
-        dollars = (amount.cents.abs / 100).floor.to_s
-        cents = (amount.cents.abs % 100).to_s.rjust(2, '0')
-        "#{sign}#{dollars}.#{cents}"
-      end
+      return '_____' unless amount.fixed?
+
+      sign = amount.cents >= 0 ? '' : '-'
+      cents = (amount.cents.abs % 100).to_s.rjust(2, '0')
+      dollars = (amount.cents.abs / 100).floor.to_s
+      commad_dollars = dollars
+        .chars
+        .reverse
+        .each_slice(3)
+        .map{ |slice| slice.join }
+        .join(',')
+        .reverse
+
+      "#{sign}#{commad_dollars}.#{cents}"
     end
   end
 
