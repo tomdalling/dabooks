@@ -39,7 +39,7 @@ EOS
       .sort_by(&:first)
       .map do |(acc, bal)|
         [
-          '  '*acc.depth + Formatter.format_account(acc),
+          '    '*acc.depth + acc.last_component,
           Formatter.format_amount(bal),
         ]
       end

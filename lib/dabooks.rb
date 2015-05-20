@@ -89,6 +89,10 @@ module Dabooks
       end
     end
 
+    def last_component
+      @name.rpartition(':').last
+    end
+
     def eql?(other)
       other.is_a?(self.class) && other.name == name
     end
