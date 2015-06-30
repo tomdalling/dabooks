@@ -20,7 +20,7 @@ EOS
     @argv.each do |file|
       transaction_set = File.open(file, 'r') { |f| Dabooks::Parser.parse(f) }
       transaction_set.each do |trans|
-        trans.entries.each do |entry|
+        trans.normalized_entries.each do |entry|
           if entry.account == target_account
             balance += entry.amount
             lines << [
