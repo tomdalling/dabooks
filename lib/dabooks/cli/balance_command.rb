@@ -5,6 +5,7 @@ class CLI::BalanceCommand
 Usage:
   dabooks balance [options] <filename>
 EOS
+    opt :filter, 'Transaction filter', type: :string, default: ''
   end
 
   def initialize(opts, argv)
@@ -13,16 +14,19 @@ EOS
   end
 
   def run
-    @argv.each{ |file| balance(file) }
+    filter = Filter.from_dsl(@opts[:filter])
+    @argv.each{ |file| balance(file, filter) }
   end
 
-  def balance(file)
+  def balance(file, filter)
     transaction_set = File.open(file, 'r') { |f| Dabooks::Parser.parse(f) }
     all_balances = Hash.new{ |h,k| h[k] = Amount.new(0) }
 
     transaction_set.each do |trans|
-      trans.normalized_entries.each do |entry|
-        all_balances[entry.account] += entry.amount
+      if filter.include?(trans)
+        trans.normalized_entries.each do |entry|
+          all_balances[entry.account] += entry.amount
+        end
       end
     end
 

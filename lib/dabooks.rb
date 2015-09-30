@@ -2,6 +2,7 @@ require 'stringio'
 require 'date'
 require 'adamantium'
 
+require 'dabooks/filter'
 require 'dabooks/formatter'
 require 'dabooks/table_formatter'
 require 'dabooks/parser'
