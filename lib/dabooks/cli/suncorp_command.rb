@@ -3,12 +3,12 @@ require 'ox'
 module Dabooks
 class CLI::SuncorpCommand
   OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Converts OFX files from Suncorp into Dabooks format
+    banner <<-EOS.dedent
+      Converts OFX files from Suncorp into Dabooks format
 
-Usage:
-  dabooks suncorp [options] <filename>
-EOS
+      Usage:
+        dabooks suncorp [options] <filename+>
+    EOS
   end
 
   def initialize(opts, argv)
@@ -17,6 +17,11 @@ EOS
   end
 
   def run
+    if @argv.empty?
+      puts("Didn't specify any OFX files")
+      exit(1)
+    end
+
     transactions = @argv.flat_map do |file|
       xform(parse(file), account_for_file(file))
     end

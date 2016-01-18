@@ -1,6 +1,7 @@
 require 'stringio'
 require 'date'
 require 'adamantium'
+require 'dedent'
 
 require 'dabooks/filter'
 require 'dabooks/formatter'
