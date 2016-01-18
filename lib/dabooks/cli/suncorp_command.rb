@@ -52,7 +52,10 @@ class CLI::SuncorpCommand
   end
 
   def parse_amount(str)
-    Integer(str.gsub(/\./, '').gsub(/\A0+/, ''))
+    negative = (str[0] == '-')
+    cents_str = str.gsub(/\./, '').gsub(/\A-?0*/, '')
+    cents = Integer(cents_str)
+    negative ? -cents : cents
   end
 
   def xform(transactions, account)
