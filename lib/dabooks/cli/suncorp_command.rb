@@ -6,6 +6,8 @@ class CLI::SuncorpCommand
     banner <<-EOS.dedent
       Converts OFX files from Suncorp into Dabooks format
 
+      The names of the OFX files should match the 'X' in 'assets:suncorp:X'
+
       Usage:
         dabooks suncorp [options] <filename+>
     EOS
