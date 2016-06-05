@@ -1,4 +1,4 @@
-require 'trollop'
+require 'dowl_opt_parse'
 
 module Dabooks::CLI
   extend self
@@ -8,17 +8,18 @@ module Dabooks::CLI
     run_subcommand(argv.shift, argv)
   end
 
-  def run_subcommand(subcommand_name, args)
+  def run_subcommand(subcommand_name, argv)
     subcommand = subcommand_class(subcommand_name)
     unless subcommand
       puts("Unknown subcommand: #{subcommand_name}")
       exit(1)
     end
 
-    Trollop.with_standard_exception_handling(subcommand::OPTIONS) do
-      opts = subcommand::OPTIONS.parse(args)
-      subcommand.new(opts, args).run
-    end
+    schema = subcommand::DETAILS.fetch(:schema)
+    opts = DowlOptParse.parse(schema, argv)
+    subcommand.new(opts).run
+  rescue DowlOptParse::Parser::Error => ex
+    puts "ERROR: #{ex.messages}"
   end
 
   def subcommand_class(subcommand_name)

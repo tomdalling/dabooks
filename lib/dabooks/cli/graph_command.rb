@@ -1,15 +1,13 @@
 module Dabooks
 class CLI::GraphCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Usage:
-  dabooks graph [options] <account> <filename>
-EOS
-  end
+  DETAILS = {
+    description: 'ASCII graphing for account balances over time.',
+    usage: 'dabooks graph <account> <filename>',
+    schema: {},
+  }
 
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def initialize(clargs)
+    @argv = clargs.free_args
   end
 
   def run

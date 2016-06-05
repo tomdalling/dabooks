@@ -1,15 +1,13 @@
 module Dabooks
 class CLI::CheckCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Usage:
-  dabooks check [options] <filename>
-EOS
-  end
+  DETAILS = {
+    description: "Checks the integrity of a book file.",
+    usage: "dabooks check <filename>",
+    schema: {},
+  }
 
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def initialize(cli)
+    @argv = cli.free_args
   end
 
   ResultSummary = Struct.new(:problems, :total) do

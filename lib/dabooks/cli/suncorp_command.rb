@@ -2,20 +2,19 @@ require 'ox'
 
 module Dabooks
 class CLI::SuncorpCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS.dedent
-      Converts OFX files from Suncorp into Dabooks format
+  DETAILS = {
+    description: <<~EOS,
+      Converts OFX files from Suncorp into Dabooks format.
 
-      The names of the OFX files should match the 'X' in 'assets:suncorp:X'
-
-      Usage:
-        dabooks suncorp [options] <filename+>
+      The names of the OFX files should match the 'X' in 'assets:suncorp:X'.
+      Check `bin/fetch_suncorp.rb` for fetching the OFX files.
     EOS
-  end
+    usage: 'dabooks suncorp <ofx_file>+',
+    schema: {},
+  }
 
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def initialize(cli)
+    @argv = cli.free_args
   end
 
   def run

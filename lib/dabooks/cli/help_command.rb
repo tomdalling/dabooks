@@ -1,24 +1,20 @@
 module Dabooks
   class CLI::HelpCommand
-    OPTIONS = Trollop::Parser.new do
-      banner <<-EOS.dedent
-        Displays a list of subcommands, or help for a specific subcommand.
+    DETAILS = {
+      description: "Displays a list of subcommands, or help for a specific subcommand.",
+      usage: "dabooks help [subcommand]",
+      schema: {},
+    }
 
-        Usage:
-          dabooks help [subcommand]
-      EOS
-    end
-
-    def initialize(opts, argv)
-      @opts = opts
-      @argv = argv
+    def initialize(cli)
+      @subcommand = cli.free_args.first
     end
 
     def run
-      case @argv.size
-      when 0 then print_subcommands
-      when 1 then print_help_for_command(@argv.last)
-      else puts('Command not specified correctly')
+      if @subcommand
+        print_help_for_command(@subcommand)
+      else
+        print_subcommands
       end
     end
 
@@ -50,7 +46,18 @@ module Dabooks
         exit(1)
       end
 
-      cmd_class::OPTIONS.educate
+      details = cmd_class::DETAILS
+      puts details.fetch(:description)
+      puts
+      puts "Usage:"
+      puts "  #{details.fetch(:usage)}"
+
+      schema = details.fetch(:schema)
+      unless schema.empty?
+        puts
+        puts "Options:"
+        puts DowlOptParse.format(schema)
+      end
     end
 
   end

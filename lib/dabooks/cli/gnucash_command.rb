@@ -1,21 +1,16 @@
 require 'zlib'
 require 'ox'
-require 'pp'
 
 module Dabooks
 class CLI::GnucashCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Converts GnuCash files into dabooks format
+  DETAILS = {
+    description: 'Converts GnuCash files into dabooks format.',
+    usage: 'dabooks gnucash <filename>',
+    schema: {},
+  }
 
-Usage:
-  dabooks gnucash [options] <filename>
-EOS
-  end
-
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def initialize(clargs)
+    @argv = clargs.free_args
   end
 
   def run

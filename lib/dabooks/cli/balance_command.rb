@@ -1,21 +1,30 @@
 module Dabooks
 class CLI::BalanceCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Usage:
-  dabooks balance [options] <filename>
-EOS
-    opt :filter, 'Transaction filter', type: :string, default: ''
+  DETAILS = {
+    description: 'Shows balances for all accounts.',
+    usage: 'dabooks balance [options] <filename>',
+    schema: {
+      filter: {
+        long: '--filter',
+        short: '-f',
+        argument: :string,
+        doc: 'Transaction filter',
+        default: '',
+      }
+    }
+  }
+
+  def initialize(cli)
+    @cli = cli
   end
 
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def options
+    @cli.options
   end
 
   def run
-    filter = Filter.from_dsl(@opts[:filter])
-    @argv.each{ |file| balance(file, filter) }
+    filter = Filter.from_dsl(@cli.options[:filter])
+    @cli.free_args.each{ |file| balance(file, filter) }
   end
 
   def balance(file, filter)

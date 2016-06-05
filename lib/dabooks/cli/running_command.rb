@@ -1,15 +1,13 @@
 module Dabooks
 class CLI::RunningCommand
-  OPTIONS = Trollop::Parser.new do
-    banner <<-EOS
-Usage:
-  dabooks running [options] <account> <filename>+
-EOS
-  end
+  DETAILS = {
+    description: 'Shows a running total for a given account.',
+    usage: 'dabooks running <account> <filename>+',
+    schema: {},
+  }
 
-  def initialize(opts, argv)
-    @opts = opts
-    @argv = argv
+  def initialize(cli)
+    @argv = cli.free_args
   end
 
   def run
