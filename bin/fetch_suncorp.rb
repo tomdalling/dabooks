@@ -2,15 +2,25 @@
 
 require 'net/http'
 require 'io/console'
+require 'nokogiri'
+require 'byebug'
 
-LOGIN_FORM_URL = 'https://internetbanking.suncorpbank.com.au/Logon'
-LOGIN_URL = 'https://internetbanking.suncorpbank.com.au/'
+LOGIN_FORM_URL = 'https://internetbanking.suncorpbank.com.au/'
 LOGOUT_URL = 'https://internetbanking.suncorpbank.com.au/Logoff'
 USER_AGENT = 'DabooksBot (+https://github.com/tomdalling/dabooks)'
 ACCOUNTS_PATH = ARGV[1] || 'books/accounts.txt'
 ACCOUNTS = File.read(ACCOUNTS_PATH)
   .each_line
   .map { |line| line.strip.split }
+
+def enforce_absolute_url(uri, base)
+  uri = URI(uri)
+  if uri.relative?
+    URI.join(base.to_s, uri.to_s)
+  else
+    uri
+  end
+end
 
 class NetClient
   class RequestError < StandardError; end
@@ -19,8 +29,17 @@ class NetClient
     @cookies = {}
   end
 
-  def get(uri)
-    request(:Get, uri)
+  def get(uri, follow_redirects: false)
+    response = request(:Get, uri)
+    response = follow_redirects(response) if follow_redirects
+    response
+  end
+
+  def follow_redirects(response)
+    while response.code == '302'
+      response = request(:Get, enforce_absolute_url(response['Location'], response.uri))
+    end
+    response
   end
 
   def post(uri, params={})
@@ -29,6 +48,7 @@ class NetClient
 
   def request(klass, uri, params={})
     uri = URI(uri)
+    #puts "#{klass} #{uri.scheme}://#{uri.host}#{uri.path}"
     request = Net::HTTP.const_get(klass).new(uri)
     request.set_form_data(params) unless params.empty?
     set_headers(request)
@@ -40,6 +60,7 @@ class NetClient
 
     if response_successfull?(response)
       merge_response(response)
+      #puts response.code.inspect
       response
     else
       raise(RequestError, response)
@@ -76,9 +97,6 @@ class NetClient
     end
 end
 
-def get_session_id(login_response)
-end
-
 def download_account(client, session_id, account_no, account_name)
   search_uri = "https://internetbanking.suncorpbank.com.au/#{session_id}/TransactionHistory/Search"
   client.post(search_uri, {
@@ -101,7 +119,20 @@ def download_account(client, session_id, account_no, account_name)
   puts "Downloaded #{account_name}.ofx"
 end
 
+def extract_login_uri(response)
+  page = Nokogiri::HTML(response.body)
+  form = page.css('form').find { |el| el['name'] == 'Logon' }
+  fail "!!! Can't find login form" unless form
+
+  enforce_absolute_url(form['action'], response.uri)
+end
+
 def login(client)
+  #find the login form
+  form_response = client.get(LOGIN_FORM_URL, follow_redirects: true)
+  login_url = extract_login_uri(form_response)
+
+  #get the username/password
   print 'Customer ID: '
   customer_id = gets.strip
   print 'Password: '
@@ -109,14 +140,14 @@ def login(client)
   puts
 
   #login
-  login_response = client.post(LOGIN_URL, {
-    'UserId' => customer_id,
-    'Password' => password,
-    'TokenCode' => '',
-  })
+  login_response = client.follow_redirects(client.post(login_url, {
+    'username' => customer_id,
+    'password' => password,
+    'passcode' => '',
+  }))
 
-  if login_response.code == '302'
-    login_response['Location'][%r{/([A-Z0-9]+)/Accounts}, 1]
+  if login_response.code == '200'
+    login_response.uri.to_s[%r{/([A-Z0-9]+)/Accounts}, 1]
   else
     p login_response
     File.write('failure.html', login_response.body)
@@ -127,14 +158,12 @@ end
 def main
   client = NetClient.new
 
-  # get all the cookies
-  puts "Making a session..."
-  client.get(LOGIN_FORM_URL)
-
   # do the login
   puts "Logging in..."
   session_id = login(client)
-  raise "!!! Failed to log in. See failure.html for more info." unless session_id
+  unless session_id
+    raise "!!! Failed to log in. See failure.html for more info."
+  end
 
   #download accounts
   ACCOUNTS.each do |acc_no, acc_name|

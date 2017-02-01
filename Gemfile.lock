@@ -4,11 +4,17 @@ GEM
     adamantium (0.2.0)
       ice_nine (~> 0.11.0)
       memoizable (~> 0.4.0)
+    byebug (9.0.6)
     dedent (1.0.1)
     ice_nine (0.11.2)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
+    mini_portile2 (2.1.0)
     minitest (5.9.0)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
+    pkg-config (1.1.7)
     thread_safe (0.3.5)
 
 PLATFORMS
@@ -16,8 +22,10 @@ PLATFORMS
 
 DEPENDENCIES
   adamantium (~> 0.2.0)
+  byebug
   dedent (~> 1.0)
   minitest
+  nokogiri
 
 BUNDLED WITH
-   1.12.5
+   1.13.6
