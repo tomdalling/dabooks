@@ -4,6 +4,7 @@ require 'net/http'
 require 'io/console'
 require 'nokogiri'
 require 'byebug'
+require 'date'
 
 LOGIN_FORM_URL = 'https://internetbanking.suncorpbank.com.au/'
 LOGOUT_URL = 'https://internetbanking.suncorpbank.com.au/Logoff'
@@ -97,14 +98,18 @@ class NetClient
     end
 end
 
-def download_account(client, session_id, account_no, account_name)
+def aus_date(date)
+  date.strftime('%d/%m/%Y')
+end
+
+def download_account(client, session_id, account_no, account_name, from_date)
   search_uri = "https://internetbanking.suncorpbank.com.au/#{session_id}/TransactionHistory/Search"
   client.post(search_uri, {
     'SearchType' => 'Quick',
     'AccountNumber' => account_no.to_s,
-    'PeriodType' => 'Last180Days',
-    'FromDate' => '',
-    'ToDate' => '',
+    'PeriodType' => 'ByDate',
+    'FromDate' => aus_date(from_date),
+    'ToDate' => aus_date(Date.today),
     'Order' => 'Ascending',
   })
 
@@ -155,7 +160,26 @@ def login(client)
   end
 end
 
+def get_from_date
+  default = Date.today.prev_month(6)
+  print "From what date? (default #{default.iso8601}): "
+  input = gets.strip
+
+  if input.empty?
+    default
+  else
+    begin
+      Date.iso8601(input)
+    rescue ArgumentError
+      puts "Invalid date"
+      abort
+    end
+  end
+end
+
 def main
+  from_date = get_from_date
+
   client = NetClient.new
 
   # do the login
@@ -167,7 +191,7 @@ def main
 
   #download accounts
   ACCOUNTS.each do |acc_no, acc_name|
-    download_account(client, session_id, acc_no, acc_name)
+    download_account(client, session_id, acc_no, acc_name, from_date)
   end
 
   #logout
