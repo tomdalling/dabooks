@@ -28,7 +28,7 @@ class CLI::BalanceCommand
   end
 
   def balance(file, filter)
-    transaction_set = File.open(file, 'r') { |f| Dabooks::Parser.parse(f) }
+    transaction_set = transaction_set_for(file)
     all_balances = Hash.new{ |h,k| h[k] = Amount.new(0) }
 
     transaction_set.each do |trans|
@@ -63,6 +63,13 @@ class CLI::BalanceCommand
       { align: :right },
     ])
     print "\n"
+  end
+
+  def transaction_set_for(path)
+    File.open(path, 'r') { |f| Dabooks::Parser.parse(f) }
+  rescue Errno::ENOENT
+    $stderr.puts("File not found: #{path}")
+    abort
   end
 
 end

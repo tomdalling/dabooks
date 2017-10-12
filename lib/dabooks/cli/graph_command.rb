@@ -28,7 +28,11 @@ class CLI::GraphCommand
     end
 
     points.sort_by!(&:first)
-    graph(points)
+    if points.any?
+      graph(points)
+    else
+      $stderr.puts("No transactions found")
+    end
   end
 
   def graph(points)
