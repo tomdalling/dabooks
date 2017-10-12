@@ -19,7 +19,7 @@ class CLI::GraphCommand
       transaction_set = File.open(file, 'r') { |f| Dabooks::Parser.parse(f) }
       transaction_set.each do |trans|
         trans.normalized_entries.each do |entry|
-          if entry.account == target_account
+          if target_account.include?(entry.account)
             balance += entry.amount
             points << [trans.date, balance]
           end

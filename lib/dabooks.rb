@@ -91,6 +91,10 @@ module Dabooks
       end
     end
 
+    def include?(other)
+      other.name.start_with?(self.name)
+    end
+
     def last_component
       @name.rpartition(':').last
     end
