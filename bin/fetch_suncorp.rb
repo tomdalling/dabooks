@@ -126,7 +126,7 @@ end
 
 def extract_login_uri(response)
   page = Nokogiri::HTML(response.body)
-  form = page.css('form').find { |el| el['name'] == 'Logon' }
+  form = page.css('form').find { |el| el['id'] == 'loginForm' }
   fail "!!! Can't find login form" unless form
 
   enforce_absolute_url(form['action'], response.uri)
