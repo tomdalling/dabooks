@@ -1,13 +1,22 @@
+require 'csv'
+
 module Dabooks
 class CLI::RunningCommand
   DETAILS = {
     description: 'Shows a running total for a given account.',
-    usage: 'dabooks running <account> <filename>+',
-    schema: {},
+    usage: 'dabooks running [options] <account> <filename>+',
+    schema: {
+      csv: {
+        long: '--csv',
+        short: '-c',
+        doc: 'Output in CSV format'
+      },
+    },
   }
 
   def initialize(cli)
     @argv = cli.free_args
+    @csv = cli.options[:csv]
   end
 
   def run
@@ -32,12 +41,26 @@ class CLI::RunningCommand
       end
     end
 
+    if @csv
+      output_csv(lines)
+    else
+      output_cli_text(lines)
+    end
+  end
+
+  def output_cli_text(lines)
     TableFormatter.print_rows(lines, $stdout, [
       {align: :right},
       {align: :right},
       {},
       {}
     ])
+  end
+
+  def output_csv(lines)
+    csv = CSV.new($stdout)
+    csv << ["Balance", "Amount", "Date", "Description"]
+    lines.each { |l| csv << l }
   end
 
 end
