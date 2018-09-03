@@ -74,19 +74,12 @@ module Dabooks
   end
 
   class Account
-    include Adamantium
-    attr_reader :name
+    include ValueSemantics.for_attributes {
+      name String
+    }
 
-    def initialize(name)
-      @name = name
-    end
-
-    def self.[](*args)
-      new(*args)
-    end
-
-    def hash
-      name.hash
+    def self.[](name)
+      new(name: name)
     end
 
     def depth
@@ -96,34 +89,22 @@ module Dabooks
     def parent
       if name.include?(':')
         parent_name, _, _ = name.rpartition(':')
-        Account.new(parent_name)
+        self.class.new(name: parent_name)
       else
         nil
       end
     end
 
     def include?(other)
-      other.name.start_with?(self.name)
+      other.name.start_with?(name)
     end
 
     def last_component
-      @name.rpartition(':').last
-    end
-
-    def eql?(other)
-      other.is_a?(self.class) && other.name == name
-    end
-
-    def ==(other)
-      eql?(other)
+      name.rpartition(':').last
     end
 
     def <=>(other)
       name <=> other.name
-    end
-
-    def inspect
-      "<Account #{@name.inspect}>"
     end
   end
 
