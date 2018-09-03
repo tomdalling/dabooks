@@ -81,7 +81,10 @@ module Dabooks
         end
 
         account_name, _, amount_str = line.rpartition(/\s+/)
-        Entry.new(parse_account(account_name.strip), parse_amount(amount_str))
+        Entry.new(
+          account: parse_account(account_name.strip),
+          amount: parse_amount(amount_str),
+        )
       end
 
       def parse_account(name)

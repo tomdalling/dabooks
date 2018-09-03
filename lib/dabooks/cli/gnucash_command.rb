@@ -97,8 +97,8 @@ class CLI::GnucashCommand
 
   def xform_entry(split, doc)
     Entry.new(
-      xform_account(split[:account_guid], doc),
-      xform_amount(split[:value]),
+      account: xform_account(split[:account_guid], doc),
+      amount: xform_amount(split[:value]),
     )
   end
 

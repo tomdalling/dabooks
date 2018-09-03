@@ -68,8 +68,8 @@ class CLI::SuncorpCommand
       trans[:date],
       trans[:description],
       [
-        Entry.new(account, Amount[trans[:amount]]),
-        Entry.new(Account['-----'], Amount.unfixed)
+        Entry.new(account: account, amount: Amount[trans[:amount]]),
+        Entry.new(account: Account['-----'], amount: Amount.unfixed)
       ]
     )
   end

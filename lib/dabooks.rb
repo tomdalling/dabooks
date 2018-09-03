@@ -109,17 +109,10 @@ module Dabooks
   end
 
   class Entry
-    include Adamantium
-    attr_reader :account, :amount
-
-    def initialize(account, amount)
-      @account = account
-      @amount = amount
-    end
-
-    def inspect
-      "<Entry #{@account.inspect} #{@amount.inspect}>"
-    end
+    include ValueSemantics.for_attributes {
+      account Account
+      amount Amount
+    }
   end
 
   class Transaction
@@ -168,7 +161,7 @@ module Dabooks
       return entries if fixed?
 
       entries.map do |e|
-        e.amount.fixed? ? e : Entry.new(e.account, -fixed_balance)
+        e.amount.fixed? ? e : Entry.new(account: e.account, amount: -fixed_balance)
       end
     end
     memoize :normalized_entries
