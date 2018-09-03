@@ -1,8 +1,6 @@
 module Dabooks
 
   class Formatter
-    include Adamantium
-
     def initialize(transaction_set)
       @transaction_set = transaction_set
     end
@@ -22,18 +20,18 @@ module Dabooks
     end
 
     def max_account_width
-      @transaction_set.transactions.flat_map do |trans|
-        trans.entries.map { |entry| format_account(entry.account).length }
-      end.max
+      @max_account_width ||=
+        @transaction_set.transactions.flat_map do |trans|
+          trans.entries.map { |entry| format_account(entry.account).length }
+        end.max
     end
-    memoize :max_account_width
 
     def max_amount_width
-      @transaction_set.transactions.flat_map do |trans|
-        trans.entries.map { |entry| format_amount(entry.amount).length }
-      end.max
+      @max_amount_width ||=
+        @transaction_set.transactions.flat_map do |trans|
+          trans.entries.map { |entry| format_amount(entry.amount).length }
+        end.max
     end
-    memoize :max_amount_width
 
     def format_transaction_header(transaction)
       "#{transaction.date} #{transaction.description}"
