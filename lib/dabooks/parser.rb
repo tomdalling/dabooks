@@ -18,7 +18,7 @@ module Dabooks
       while t = next_transaction
         transactions << t
       end
-      return TransactionSet.new(transactions)
+      return TransactionSet.new(transactions: transactions)
     end
 
     private

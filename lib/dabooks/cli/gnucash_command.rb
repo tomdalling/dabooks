@@ -59,7 +59,9 @@ class CLI::GnucashCommand
 
   def xform(doc)
     TransactionSet.new(
-      doc[:transactions].map{ |trans| xform_transaction(trans, doc) }.sort_by(&:date)
+      transactions: doc[:transactions]
+        .map{ |trans| xform_transaction(trans, doc) }
+        .sort_by(&:date)
     )
   end
 

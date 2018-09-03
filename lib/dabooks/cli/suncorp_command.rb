@@ -27,7 +27,7 @@ class CLI::SuncorpCommand
       xform(parse(file), account_for_file(file))
     end
     transactions.sort_by!(&:date)
-    print_ts(TransactionSet.new(transactions))
+    print_ts(TransactionSet.new(transactions: transactions))
   end
 
   def account_for_file(file)

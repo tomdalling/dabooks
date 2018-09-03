@@ -160,16 +160,13 @@ module Dabooks
   end
 
   class TransactionSet
-    include Adamantium
     include Enumerable
-    attr_reader :transactions
+    include ValueSemantics.for_attributes {
+      transactions array_of(Transaction)
+    }
 
-    def initialize(transactions)
-      @transactions = transactions
-    end
-
-    def each
-      @transactions.each{ |t| yield t }
+    def each(&block)
+      transactions.each(&block)
     end
   end
 
