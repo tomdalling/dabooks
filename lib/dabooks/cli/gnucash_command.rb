@@ -65,9 +65,9 @@ class CLI::GnucashCommand
 
   def xform_transaction(trans, doc)
     Transaction.new(
-      xform_date(trans[:date]),
-      trans[:description],
-      trans[:splits].map{ |split| xform_entry(split, doc) },
+      date: xform_date(trans[:date]),
+      description: trans[:description],
+      entries: trans[:splits].map{ |split| xform_entry(split, doc) },
     )
   end
 

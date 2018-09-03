@@ -65,9 +65,9 @@ class CLI::SuncorpCommand
 
   def xform_transaction(trans, account)
     Transaction.new(
-      trans[:date],
-      trans[:description],
-      [
+      date: trans[:date],
+      description: trans[:description],
+      entries: [
         Entry.new(account: account, amount: Amount[trans[:amount]]),
         Entry.new(account: Account['-----'], amount: Amount.unfixed)
       ]

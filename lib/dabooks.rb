@@ -116,55 +116,47 @@ module Dabooks
   end
 
   class Transaction
-    include Adamantium
-    attr_reader :date, :entries, :description
-
-    def initialize(date, description, entries)
-      @date = date
-      @description = description
-      @entries = entries
-    end
+    include ValueSemantics.for_attributes {
+      date Date
+      description String
+      entries array_of(Entry)
+    }
 
     def balance
-      Amount.new(
+      @balance ||=
         if fixed?
-          entries.map(&:amount).map(&:cents).reduce(0, :+)
+          entries.map(&:amount).reduce(Amount[0], :+)
         else
-          0
+          Amount[0]
         end
-      )
     end
-    memoize :balance
 
     def balanced?
-      balance.cents == 0
+      balance.zero?
     end
-    memoize :balanced?
 
     def fixed?
       entries.map(&:amount).all?(&:fixed?)
     end
-    memoize :fixed?
 
     def fixed_balance
-      Amount.new(
-        entries
-          .map(&:amount)
-          .select(&:fixed?)
-          .map(&:cents)
-          .reduce(0, :+)
-      )
+      @fixed_balance ||= entries
+        .map(&:amount)
+        .select(&:fixed?)
+        .reduce(Amount[0], :+)
     end
-    memoize :fixed_balance
 
     def normalized_entries
       return entries if fixed?
 
       entries.map do |e|
-        e.amount.fixed? ? e : Entry.new(account: e.account, amount: -fixed_balance)
+        if e.amount.fixed?
+          e
+        else
+          Entry.new(account: e.account, amount: -fixed_balance)
+        end
       end
     end
-    memoize :normalized_entries
   end
 
   class TransactionSet

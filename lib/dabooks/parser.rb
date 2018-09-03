@@ -31,7 +31,11 @@ module Dabooks
         date = parse_date(date_str)
         entries = parse_entries
 
-        Transaction.new(date, description, entries)
+        Transaction.new(
+          date: date,
+          description: description,
+          entries: entries,
+        )
       end
 
       def next_line
