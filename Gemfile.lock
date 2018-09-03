@@ -1,3 +1,8 @@
+PATH
+  remote: ../value_semantics
+  specs:
+    value_semantics (0.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -6,13 +11,26 @@ GEM
       memoizable (~> 0.4.0)
     byebug (9.0.6)
     dedent (1.0.1)
+    diff-lcs (1.3)
     ice_nine (0.11.2)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
     mini_portile2 (2.3.0)
-    minitest (5.10.2)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
+    rspec (3.8.0)
+      rspec-core (~> 3.8.0)
+      rspec-expectations (~> 3.8.0)
+      rspec-mocks (~> 3.8.0)
+    rspec-core (3.8.0)
+      rspec-support (~> 3.8.0)
+    rspec-expectations (3.8.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.8.0)
+    rspec-mocks (3.8.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.8.0)
+    rspec-support (3.8.0)
     thread_safe (0.3.6)
 
 PLATFORMS
@@ -22,8 +40,9 @@ DEPENDENCIES
   adamantium (~> 0.2.0)
   byebug
   dedent (~> 1.0)
-  minitest
   nokogiri (~> 1.8.1)
+  rspec (~> 3.7)
+  value_semantics!
 
 BUNDLED WITH
    1.15.3

@@ -1,7 +1,6 @@
 require 'dowl_opt_parse'
-require 'shellwords'
 
-class DowlOptParseTest < Minitest::Test
+RSpec.describe DowlOptParse do
   SCHEMA = {
     cat: {
       long: '--cat',
@@ -31,48 +30,49 @@ class DowlOptParseTest < Minitest::Test
   def assert_parse(cmdline, result_options, free_args = [], options = {})
     config = options.fetch(:config, SCHEMA)
     result = DowlOptParse.parse(config, Shellwords.split(cmdline))
-    assert_equal result_options, result.options
-    assert_equal free_args, result.free_args
+    expect(result_options).to eq(result.options)
+    expect(free_args).to eq(result.free_args)
   end
 
   def assert_parse_raises(cmdline, msg, options={})
     config = options.fetch(:config, SCHEMA)
-    ex = assert_raises { DowlOptParse.parse(config, Shellwords.split(cmdline)) }
-    assert_equal msg, ex.message
+    expect {
+      DowlOptParse.parse(config, Shellwords.split(cmdline))
+    }.to raise_error(msg)
   end
 
-  def test_short_flags
+  specify 'short flags' do
     assert_parse '-c', { cat: true }
     assert_parse '-cd', { cat: true, dog: true }
   end
 
-  def test_long_flags
+  specify 'long flags' do
     assert_parse '--cat', { cat: true }
     assert_parse '--cat --dog', { cat: true, dog: true }
   end
 
-  def test_option_arguments
+  specify 'option arguments' do
     assert_parse '-n Tom', { name: 'Tom' }
     assert_parse '--name Dowl', { name: 'Dowl' }
     assert_parse '-cn Dane', { cat: true, name: 'Dane' }
   end
 
-  def test_free_arguments
+  specify 'free arguments' do
     assert_parse 'hello world', {}, ['hello', 'world']
     assert_parse '-c hello --name Tom world', { cat: true, name: 'Tom'}, ['hello', 'world']
   end
 
-  def test_double_hypen
+  specify 'double hyphen' do
     assert_parse '-c --', { cat: true }
     assert_parse '-c -- -d -a 5 hello', { cat: true }, ['-d', '-a', '5', 'hello']
   end
 
-  def test_coercion
+  specify 'coercion' do
     assert_parse '-a 5', { age: 5 }
     assert_parse '--time 1.23', { time: 1.23 }
   end
 
-  def test_defaults
+  specify 'defaults' do
     config = {
       name: {
         argument: :string,
@@ -85,8 +85,8 @@ class DowlOptParseTest < Minitest::Test
     assert_parse '-n Dane', { name: 'Dane' }, [], config: config
   end
 
-  def test_config_formatter
-    expected = <<~EOS.strip
+  specify 'config formatter' do
+    expect(DowlOptParse.format(SCHEMA)).to eq(<<~END_STRING.strip)
       --cat, -c
           Enable cats.
       --dog, -d
@@ -95,20 +95,17 @@ class DowlOptParseTest < Minitest::Test
       --name, -n string
       -a integer
       --time float
-    EOS
-    actual = DowlOptParse.format(SCHEMA)
-
-    assert_equal expected, actual
+    END_STRING
   end
 
-  def test_option_argument_missing
+  specify 'option argument missing' do
     assert_parse_raises '-a', 'Required argument missing for flag: -a'
     assert_parse_raises '-c -a', 'Required argument missing for flag: -a'
     assert_parse_raises '-ca', 'Required argument missing for flag: -a'
     assert_parse_raises '-ac', 'Required argument missing for flag: -a'
   end
 
-  def test_required_options_missing
+  specify 'required options missing' do
     assert_parse_raises '', 'Required flag is missing: --whatever, -w', config: {
       whatever: {
         required: true,
@@ -119,7 +116,7 @@ class DowlOptParseTest < Minitest::Test
     }
   end
 
-  def test_argument_coercer_not_defined
+  specify 'argument coercer not defined' do
     assert_parse_raises '-w 5', 'Unrecognised argument type for flag -w: :wigwam', config: {
       whatever: {
         short: '-w',
@@ -128,11 +125,11 @@ class DowlOptParseTest < Minitest::Test
     }
   end
 
-  def test_undefined_flag
+  specify 'undefined flag' do
     assert_parse_raises '-x', 'Unrecognised flag: -x'
   end
 
-  def test_bool_coercer
+  specify 'bool coercer' do
     config = {
       boo: {
         argument: :bool,
@@ -150,7 +147,7 @@ class DowlOptParseTest < Minitest::Test
     assert_parse_raises '-b waka', 'Value for flag -b is not a bool: waka', config: config
   end
 
-  def test_missing_or_invalid_option_flags
+  specify 'missing or invalid option params' do
     assert_parse_raises '', 'Option :missing must provide a :short or :long flag', config: {
       missing: { doc: 'This has no long or short flags' },
     }
@@ -169,9 +166,9 @@ class DowlOptParseTest < Minitest::Test
   end
 
   # TODO: maybe implement this
-  def disabled_test_option_argument_alternate_syntax
-    assert_equal({ name: 'Tom' }, p('-n=Tom'))
-    assert_equal({ cat: true, name: 'Dowl'}, p('-cn=Dowl'))
-    assert_equal({ name: 'Dane' }, p('--name=Dane'))
+  skip 'option argument alternate syntax' do
+    expect(p('-n=Tom'), { name: 'Tom' })
+    expect(p('-cn=Dowl'), { cat: true, name: 'Dowl'})
+    expect(p('--name=Dane'), { name: 'Dane' })
   end
 end

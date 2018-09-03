@@ -1,7 +1,8 @@
 require 'stringio'
 require 'date'
-require 'adamantium'
 require 'dedent'
+require 'adamantium'
+require 'value_semantics'
 
 require 'dabooks/filter'
 require 'dabooks/formatter'
@@ -10,27 +11,37 @@ require 'dabooks/parser'
 
 module Dabooks
   class Amount
-    include Adamantium
-    attr_reader :cents
+    include Comparable
+    include ValueSemantics.for_attributes {
+      cents either(Integer, nil)
+    }
 
-    def initialize(cents=nil)
-      @cents = cents ? Integer(cents) : nil
+    def self.coerce_cents(value)
+      if value.is_a?(String)
+        Integer(value, 10)
+      else
+        value
+      end
     end
 
     def +(other)
-      transform { @cents += other.cents }
+      with(cents: cents + other.cents)
     end
 
     def -(other)
-      transform { @cents -= other.cents }
+      with(cents: cents - other.cents)
     end
 
     def -@
-      transform { @cents = -@cents }
+      with(cents: -cents)
     end
 
     def hash
-      cents.hash
+      cents.hash ^ self.class.hash
+    end
+
+    def ==(other)
+      eql?(other)
     end
 
     def eql?(other)
@@ -53,12 +64,12 @@ module Dabooks
       "<Amount #{@cents.inspect}>"
     end
 
-    def self.[](*args)
-      new(*args)
+    def self.[](cents)
+      new(cents: cents)
     end
 
     def self.unfixed
-      new
+      new(cents: nil)
     end
   end
 
