@@ -29,7 +29,7 @@ class CLI::BalanceCommand
 
   def balance(file, filter)
     transaction_set = transaction_set_for(file)
-    all_balances = Hash.new{ |h,k| h[k] = Amount.new(0) }
+    all_balances = Hash.new{ |h,k| h[k] = Amount[0] }
 
     transaction_set.each do |trans|
       if filter.include?(trans)

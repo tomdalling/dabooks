@@ -92,12 +92,12 @@ module Dabooks
       end
 
       def parse_account(name)
-        Account.new(name)
+        Account[name]
       end
 
       def parse_amount(amount)
         # $____ or ____
-        return Amount.new if amount.strip =~ /^\$?_+$/
+        return Amount.unfixed if amount.strip =~ /^\$?_+$/
 
         split_idx = amount.index(/[0-9\-.]/)
         error 'Invalid amount', amount unless split_idx
@@ -114,7 +114,7 @@ module Dabooks
         cents = cents.gsub(/^0+/, '')
         cents = '0' if cents == ''
 
-        Amount.new(Integer(dollars)*100 + sign*Integer(cents))
+        Amount[Integer(dollars)*100 + sign*Integer(cents)]
       end
 
       def error(msg, related_text=nil)
