@@ -12,7 +12,7 @@ module Dabooks
   class Amount
     include Comparable
     include ValueSemantics.for_attributes {
-      cents either(Integer, nil)
+      cents Either(Integer, nil)
     }
 
     def self.coerce_cents(value)
@@ -118,7 +118,7 @@ module Dabooks
     include ValueSemantics.for_attributes {
       date Date
       description String
-      entries array_of(Entry)
+      entries ArrayOf(Entry)
     }
 
     def balance
@@ -161,7 +161,7 @@ module Dabooks
   class TransactionSet
     include Enumerable
     include ValueSemantics.for_attributes {
-      transactions array_of(Transaction)
+      transactions ArrayOf(Transaction)
     }
 
     def each(&block)
