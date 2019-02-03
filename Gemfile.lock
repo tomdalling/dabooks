@@ -7,6 +7,7 @@ GEM
     mini_portile2 (2.3.0)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
+    ox (2.10.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -20,7 +21,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.0)
-    value_semantics (1.0.0)
+    value_semantics (3.0.1)
 
 PLATFORMS
   ruby
@@ -29,8 +30,9 @@ DEPENDENCIES
   byebug
   dedent (~> 1.0)
   nokogiri (~> 1.8.1)
+  ox (~> 2.10)
   rspec (~> 3.7)
-  value_semantics (~> 1.0.0)
+  value_semantics (~> 3.0)
 
 BUNDLED WITH
-   1.15.3
+   1.17.2

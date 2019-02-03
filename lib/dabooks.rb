@@ -12,7 +12,7 @@ module Dabooks
   class Amount
     include Comparable
     include ValueSemantics.for_attributes {
-      cents Either(Integer, nil)
+      cents Either(Integer, nil), coerce: true
     }
 
     def self.coerce_cents(value)
@@ -33,18 +33,6 @@ module Dabooks
 
     def -@
       with(cents: -cents)
-    end
-
-    def hash
-      cents.hash ^ self.class.hash
-    end
-
-    def ==(other)
-      eql?(other)
-    end
-
-    def eql?(other)
-      other.is_a?(self.class) && cents == other.cents
     end
 
     def <=>(other)
