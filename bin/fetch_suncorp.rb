@@ -68,6 +68,10 @@ class NetClient
     end
   end
 
+  def cookie(key)
+    @cookies.fetch(key)
+  end
+
   private
 
     def set_headers(request)
@@ -136,6 +140,7 @@ def login(client)
   #find the login form
   form_response = client.get(LOGIN_FORM_URL, follow_redirects: true)
   login_url = extract_login_uri(form_response)
+  puts "Login URL: #{login_url}"
 
   #get the username/password
   print 'Customer ID: '
@@ -152,11 +157,13 @@ def login(client)
   }))
 
   if login_response.code == '200'
-    login_response.uri.to_s[%r{/([A-Z0-9]+)/Accounts}, 1]
+    account_id = client.cookie('__internal_data')
+    raise "!!! Failed to log in. Bad account id: #{account_id}" unless account_id.match?(/[A-Z0-9]+/)
+    account_id
   else
     p login_response
     File.write('failure.html', login_response.body)
-    nil
+    raise "!!! Failed to log in. See failure.html for more info."
   end
 end
 
@@ -178,16 +185,14 @@ def get_from_date
 end
 
 def main
-  from_date = get_from_date
-
   client = NetClient.new
 
   # do the login
   puts "Logging in..."
   session_id = login(client)
-  unless session_id
-    raise "!!! Failed to log in. See failure.html for more info."
-  end
+
+  # ask for 'from' date
+  from_date = get_from_date
 
   #download accounts
   ACCOUNTS.each do |acc_no, acc_name|
