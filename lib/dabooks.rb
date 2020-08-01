@@ -1,7 +1,7 @@
 require 'stringio'
 require 'date'
 require 'dedent'
-require 'value_semantics'
+require 'value_semantics/monkey_patched'
 
 require 'dabooks/filter'
 require 'dabooks/formatter'
@@ -11,9 +11,9 @@ require 'dabooks/parser'
 module Dabooks
   class Amount
     include Comparable
-    include ValueSemantics.for_attributes {
+    value_semantics do
       cents Either(Integer, nil), coerce: true
-    }
+    end
 
     def self.coerce_cents(value)
       if value.is_a?(String)
@@ -61,9 +61,9 @@ module Dabooks
   end
 
   class Account
-    include ValueSemantics.for_attributes {
+    value_semantics do
       name String
-    }
+    end
 
     def self.[](name)
       new(name: name)
@@ -96,18 +96,18 @@ module Dabooks
   end
 
   class Entry
-    include ValueSemantics.for_attributes {
+    value_semantics do
       account Account
       amount Amount
-    }
+    end
   end
 
   class Transaction
-    include ValueSemantics.for_attributes {
+    value_semantics do
       date Date
       description String
       entries ArrayOf(Entry)
-    }
+    end
 
     def balance
       @balance ||=
@@ -148,9 +148,9 @@ module Dabooks
 
   class TransactionSet
     include Enumerable
-    include ValueSemantics.for_attributes {
+    value_semantics do
       transactions ArrayOf(Transaction)
-    }
+    end
 
     def each(&block)
       transactions.each(&block)

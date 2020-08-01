@@ -21,7 +21,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.3)
-    value_semantics (3.2.0)
+    value_semantics (3.4.0)
 
 PLATFORMS
   ruby
@@ -32,7 +32,7 @@ DEPENDENCIES
   nokogiri
   ox
   rspec (~> 3.7)
-  value_semantics (~> 3.0)
+  value_semantics (~> 3.4)
 
 BUNDLED WITH
-   1.17.3
+   2.1.4
