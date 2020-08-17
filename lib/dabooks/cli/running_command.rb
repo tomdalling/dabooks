@@ -21,7 +21,7 @@ class CLI::RunningCommand
 
   def run
     target_account = Account[@argv.shift]
-    balance = Amount.new(0)
+    balance = Amount[0]
 
     lines = []
     @argv.each do |file|
