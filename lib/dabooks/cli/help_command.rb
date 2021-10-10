@@ -31,7 +31,7 @@ module Dabooks
         end
       end
 
-      puts <<-EOS.dedent
+      puts <<~EOS
 
         For help with a specific command, type:
             dabooks help <command>

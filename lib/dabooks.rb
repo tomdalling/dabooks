@@ -1,7 +1,3 @@
-require 'stringio'
-require 'date'
-require 'dedent'
-require 'value_semantics/monkey_patched'
 
 require 'dabooks/filter'
 require 'dabooks/formatter'
